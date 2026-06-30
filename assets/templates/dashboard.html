@@ -11,26 +11,149 @@
     
     <style>
         /* Modern UI Tweaks */
-        body {
-            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-            min-height: 100vh;
-        }
-        .custom-card {
-            border-radius: 16px;
-            backdrop-filter: blur(10px);
-            background-color: rgba(255, 255, 255, 0.95);
-        }
-        /* Customizing Tagify to match Bootstrap's clean focus states */
-        .tagify {
-            padding: 0.375rem 0.75rem;
-            border-radius: 0.375rem;
-            border: 1px solid #dee2e6;
-            background: #fff;
-        }
-        .tagify--focus {
-            border-color: #86b7fe;
-            box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
-        }
+        body{
+    margin:0;
+    min-height:100vh;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+
+    background:linear-gradient(135deg,#4f46e5,#3b82f6,#06b6d4);
+    font-family:'Segoe UI',sans-serif;
+}
+
+/* Glass Card */
+
+.custom-card{
+
+    width:100%;
+    max-width:380px;
+
+    border:none;
+
+    border-radius:20px;
+
+    background:rgba(255,255,255,.18);
+
+    backdrop-filter:blur(18px);
+
+    -webkit-backdrop-filter:blur(18px);
+
+    border:1px solid rgba(255,255,255,.25);
+
+    box-shadow:0 20px 40px rgba(0,0,0,.18);
+
+    transition:.3s;
+
+}
+
+.custom-card:hover{
+
+    transform:translateY(-5px);
+
+}
+
+.card-body{
+
+    padding:30px;
+
+}
+
+.logo{
+
+    width:65px;
+    height:65px;
+
+    margin:auto;
+
+    border-radius:50%;
+
+    background:rgba(255,255,255,.18);
+
+    display:flex;
+
+    justify-content:center;
+    align-items:center;
+
+    font-size:30px;
+
+    color:#fff;
+
+    margin-bottom:15px;
+
+}
+
+.title{
+
+    color:#fff;
+
+    font-size:26px;
+
+    font-weight:700;
+
+}
+
+.subtitle{
+
+    color:#f1f1f1;
+
+    font-size:14px;
+
+}
+
+.form-label{
+
+    color:#fff;
+
+    font-weight:600;
+
+}
+
+.tagify{
+
+    border-radius:10px;
+
+    background:rgba(255,255,255,.90);
+
+    border:none;
+
+}
+
+.tagify--focus{
+
+    box-shadow:0 0 0 .2rem rgba(255,255,255,.30);
+
+}
+
+.form-text{
+
+    color:#f8f9fa!important;
+
+}
+
+.btn-primary{
+
+    height:48px;
+
+    border:none;
+
+    border-radius:10px;
+
+    font-weight:600;
+
+    background:#fff;
+
+    color:#2563eb;
+
+}
+
+.btn-primary:hover{
+
+    background:#2563eb;
+
+    color:#fff;
+
+}
     </style>
 </head>
 <body>
@@ -43,8 +166,11 @@
                 <div class="card-body p-4 p-md-5">
                     
                     <div class="text-center mb-4">
-                        <h2 class="text-dark fw-bold mb-1">Image Processor</h2>
-                        <p class="text-muted small">Specify target classes for processing</p>
+                        <div class="logo">
+                            🤖
+                        </div>
+                        <h2 class="title">AI Asset Tagging</h2>
+                        <p class="subtitle">Specify the objects to detect in uploaded images</p>
                     </div>
                     
                     <form method="POST">
@@ -65,9 +191,9 @@
                             </div>
                         </div>
                         
-                        <div class="d-grid mt-5">
-                            <button type="submit" class="btn btn-primary btn-lg fw-medium shadow-sm py-3">
-                                Process Images
+                        <div class="d-grid mt-4">
+                            <button type="submit" class="btn btn-primary">   
+                                🚀 Process Images              
                             </button>
                         </div>
                         
@@ -95,4 +221,4 @@
     });
 </script>
 </body>
-</html>
+</html> 

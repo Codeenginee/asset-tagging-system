@@ -17,39 +17,89 @@
 <style>
 
 body{
-    background:#f4f6f9;
+    background:#eef3f8;
+    font-family:"Segoe UI",sans-serif;
 }
-
 .navbar{
-    background:linear-gradient(90deg,#0d6efd,#0dcaf0);
+
+    background:#0d6efd;
+
+    padding:15px 0;
+
+    box-shadow:0 4px 12px rgba(0,0,0,.08);
+
 }
 
 .card-custom{
+
     border:none;
-    border-radius:15px;
+
+    border-radius:20px;
+
     overflow:hidden;
-    transition:0.3s;
+
+    box-shadow:0 8px 25px rgba(0,0,0,.08);
+
+    transition:.3s;
+
 }
 
 .card-custom:hover{
-    transform:translateY(-5px);
-    box-shadow:0 10px 20px rgba(0,0,0,.15);
+
+    transform:translateY(-8px);
+
+    box-shadow:0 15px 30px rgba(0,0,0,.12);
+
 }
 
 .img-box{
-    height:250px;
+
+    height:240px;
+
     overflow:hidden;
+
 }
 
 .img-box img{
+
     width:100%;
+
     height:100%;
+
     object-fit:cover;
+
+    transition:.4s;
+
+}
+.card-custom:hover img{
+
+    transform:scale(1.05);
+
+}
+.progress{
+
+    height:8px;
+
+    border-radius:20px;
+
 }
 
 .stats-card{
+
     border:none;
-    border-radius:15px;
+
+    border-radius:18px;
+
+    box-shadow:0 5px 18px rgba(0,0,0,.08);
+
+    transition:.3s;
+
+}
+
+.stats-card:hover{
+
+    transform:translateY(-5px);
+
 }
 
 </style>
@@ -165,12 +215,14 @@ Grounding DINO
 <div class="input-group">
 
 <input
-type="text"
-name="search"
-class="form-control"
-placeholder="Search Tag">
 
-<button class="btn btn-primary">
+type="text"
+
+class="form-control rounded-start-pill"
+
+placeholder="Search detected object...">
+
+<button class="btn btn-primary rounded-end-pill px-4">
 
 <i class="bi bi-search"></i>
 
@@ -187,8 +239,7 @@ Search
 <div class="col-md-6 text-end">
 
 <a href="{% url 'export_csv' %}"
-   class="btn btn-success">
-
+class="btn btn-success rounded-pill px-4">
 <i class="bi bi-file-earmark-spreadsheet"></i>
 
 CSV
@@ -196,7 +247,7 @@ CSV
 </a>
 
 <a href="{% url 'export_json' %}"
-   class="btn btn-primary">
+   class="btn btn-primary rounded-pill px-4">
 
 <i class="bi bi-filetype-json"></i>
 
@@ -216,15 +267,43 @@ JSON
 
 <div class="col-lg-4 col-md-6 mb-4">
 
-<div class="card card-custom shadow h-100">
+<div class="card card-custom h-100">
+
+<div class="position-relative">
 
 <div class="img-box">
 
-<img src="{{ image.image.url }}">
+<img src="{{ image.image.url }}" alt="Detected Image">
+
+</div>
+
+<span class="badge bg-success position-absolute top-0 end-0 m-3 px-3 py-2">
+
+<i class="bi bi-check-circle-fill me-1"></i>
+
+{{ image.status }}
+
+</span>
 
 </div>
 
 <div class="card-body">
+
+<h5 class="fw-bold text-truncate">
+
+<i class="bi bi-image-fill text-primary me-2"></i>
+
+{{ image.image.name }}
+
+</h5>
+
+<p class="text-muted small mb-3">
+
+AI Detection Results
+
+</p>
+
+<hr>
 
 <h6 class="fw-bold">
 
@@ -242,61 +321,114 @@ JSON
 
 {% for detection in image.detections.all %}
 
-<div class="mb-3">
+<div class="border rounded-3 p-3 mb-3 bg-light">
 
-<p>
+<div class="d-flex justify-content-between align-items-center mb-3">
 
-<i class="bi bi-tag-fill text-danger"></i>
+<div>
 
-<strong>Tag :</strong>
+<i class="bi bi-tag-fill text-danger me-2"></i>
 
-<span class="badge bg-secondary">
+<strong>Detected Object</strong>
+
+</div>
+
+<span class="badge bg-primary fs-6">
 
 {{ detection.tag|cut:'[{"value":"'|cut:'"}]' }}
 
 </span>
 
-</p>
+</div>
 
-<p>
+<div class="d-flex justify-content-between mb-2">
 
-<i class="bi bi-bar-chart-fill text-info"></i>
+<span>
 
-<strong>Confidence :</strong>
+Confidence
 
-{{ detection.confidence|floatformat:2 }}
+</span>
 
-</p>
+<strong>
 
-<div class="progress mb-3">
+{{ detection.confidence|floatformat:2 }}%
+
+</strong>
+
+</div>
+
+<div class="progress mb-4">
 
 <div
-class="progress-bar bg-success"
-role="progressbar"
-style="width:{{ detection.confidence|floatformat:0 }}%;">
 
-{{ detection.confidence|floatformat:2 }}
+class="progress-bar progress-bar-striped progress-bar-animated bg-success"
 
-</div>
+style="width:{{ detection.confidence|floatformat:0 }}%">
 
 </div>
 
-<p>
+</div>
+<div class="bg-white border rounded p-3">
 
-<i class="bi bi-bounding-box text-primary"></i>
+<div class="fw-bold mb-3">
 
-<strong>BBox :</strong>
+<i class="bi bi-bounding-box text-primary me-2"></i>
 
-</p>
+Bounding Box
 
-<div class="alert alert-light border small">
+</div>
 
-(
-{{ detection.bbox.0|floatformat:0 }},
-{{ detection.bbox.1|floatformat:0 }},
-{{ detection.bbox.2|floatformat:0 }},
+<div class="row text-center">
+
+<div class="col-6">
+
+<small>X1</small>
+
+<h6>
+
+{{ detection.bbox.0|floatformat:0 }}
+
+</h6>
+
+</div>
+
+<div class="col-6">
+
+<small>Y1</small>
+
+<h6>
+
+{{ detection.bbox.1|floatformat:0 }}
+
+</h6>
+
+</div>
+
+<div class="col-6 mt-3">
+
+<small>X2</small>
+
+<h6>
+
+{{ detection.bbox.2|floatformat:0 }}
+
+</h6>
+
+</div>
+
+<div class="col-6 mt-3">
+
+<small>Y2</small>
+
+<h6>
+
 {{ detection.bbox.3|floatformat:0 }}
-)
+
+</h6>
+
+</div>
+
+</div>
 
 </div>
 
@@ -321,8 +453,7 @@ action="{% url 'delete_image' image.id %}">
 {% csrf_token %}
 
 <button
-class="btn btn-danger w-100">
-
+class="btn btn-outline-danger w-100 rounded-pill">
 <i class="bi bi-trash-fill"></i>
 
 Delete Image

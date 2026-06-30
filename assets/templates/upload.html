@@ -1,164 +1,436 @@
- <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Upload Images</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
-    
-    <style>
-        body {
-            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-        }
-        
-        /* Interactive Drag & Drop Area Box */
-        .upload-dropzone {
-            border: 2px dashed #0d6efd;
-            background-color: #f8f9fa;
-            border-radius: 12px;
-            cursor: pointer;
-            transition: all 0.2s ease-in-out;
-            position: relative;
-        }
-        
-        .upload-dropzone:hover, .upload-dropzone.dragover {
-            background-color: #e9ecef;
-            border-color: #0a58ca;
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Upload Images</title>
 
-        /* Hiding the ugly default native input file button completely */
-        .hidden-file-input {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            opacity: 0;
-            cursor: pointer;
-        }
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
 
-        .custom-card {
-            border: none;
-            border-radius: 16px;
-            background-color: rgba(255, 255, 255, 0.98);
-        }
-    </style>
+<style>
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:'Segoe UI',sans-serif;
+}
+
+body{
+
+height:100vh;
+
+display:flex;
+justify-content:center;
+align-items:center;
+
+background:linear-gradient(-45deg,#667eea,#764ba2,#6dd5ed,#2193b0);
+background-size:400% 400%;
+animation:bgMove 12s ease infinite;
+
+}
+
+@keyframes bgMove{
+
+0%{background-position:0% 50%;}
+50%{background-position:100% 50%;}
+100%{background-position:0% 50%;}
+
+}
+
+/* Glass Card */
+
+.upload-card{
+
+width:90%;
+max-width:360px;
+
+background:rgba(255,255,255,.18);
+backdrop-filter:blur(15px);
+
+border-radius:18px;
+
+padding:25px;
+
+box-shadow:0 15px 35px rgba(0,0,0,.25);
+
+border:1px solid rgba(255,255,255,.25);
+
+transition:.4s;
+
+}
+.upload-card:hover{
+
+transform:translateY(-5px);
+
+box-shadow:0 25px 55px rgba(0,0,0,.35);
+
+}
+
+.title{
+font-size:24px;
+font-weight:700;
+color:white;
+}
+
+.subtitle{
+
+color:#e8e8e8;
+
+font-size:15px;
+
+}
+
+/* Upload Box */
+
+.upload-box{
+
+position:relative;
+
+border:2px dashed white;
+
+border-radius:18px;
+
+padding:28px 15px;
+
+
+cursor:pointer;
+
+transition:.3s;
+
+background:rgba(255,255,255,.08);
+
+overflow:hidden;
+
+}
+
+.upload-box:hover{
+
+background:rgba(255,255,255,.15);
+
+transform:scale(1.02);
+
+}
+
+.upload-box.dragover{
+
+background:white;
+
+color:#333;
+
+}
+
+.hidden-input{
+
+position:absolute;
+left:0;
+top:0;
+
+width:100%;
+height:100%;
+
+opacity:0;
+
+cursor:pointer;
+
+}
+
+/* Upload Icon */
+
+.upload-icon{
+
+font-size:48px;
+
+color:white;
+
+animation:float 2s infinite;
+
+}
+
+@keyframes float{
+
+0%{transform:translateY(0);}
+50%{transform:translateY(-8px);}
+100%{transform:translateY(0);}
+
+}
+
+.upload-text{
+
+color:white;
+
+font-size:18px;
+
+font-weight:600;
+
+}
+
+.small-text{
+
+color:#f1f1f1;
+
+font-size:14px;
+
+}
+
+/* File List */
+
+#fileStatusContainer{
+
+background:rgba(255,255,255,.12);
+
+border-radius:12px;
+
+padding:12px;
+
+color:white;
+
+}
+
+.list-group-item{
+
+background:transparent;
+
+border:none;
+
+color:white;
+
+}
+
+/* Button */
+
+.upload-btn{
+
+height:46px;
+
+border:none;
+
+border-radius:15px;
+
+background:white;
+
+color:#5a4fcf;
+
+font-weight:700;
+
+font-size:16px;
+
+transition:.3s;
+
+}
+
+.upload-btn:hover{
+
+background:#5a4fcf;
+
+color:white;
+
+transform:translateY(-2px);
+
+}
+
+.badge{
+
+background:white!important;
+
+color:#5a4fcf!important;
+
+}
+
+</style>
+
 </head>
+
 <body>
 
-<div class="container my-5">
-    <div class="row justify-content-center mx-0">
-        <div class="col-12 col-md-8 col-lg-6 col-xl-5 px-0 px-sm-3">
-            
-            <div class="card custom-card shadow-lg">
-                <div class="card-body p-4 p-sm-5">
-                    
-                    <div class="text-center mb-4">
-                        <div class="text-primary mb-2">
-                            <i class="bi bi-cloud-arrow-up-fill fs-1"></i>
-                        </div>
-                        <h2 class="text-dark fw-bold mb-1 fs-3">Batch Image Upload</h2>
-                        <p class="text-muted small">Upload multiple graphic items down below</p>
-                    </div>
+<div class="upload-card">
 
-                    <form method="POST" enctype="multipart/form-data">
-                        {% csrf_token %}
-                        
-                        <div class="upload-dropzone p-4 p-sm-5 text-center mb-4" id="dropzone">
-                            
-                            <input 
-                                type="file" 
-                                name="images" 
-                                id="fileInput" 
-                                class="hidden-file-input" 
-                                multiple 
-                                accept="image/*">
-                            
-                            <i class="bi bi-images fs-2 text-secondary mb-3 d-block"></i>
-                            <span class="fw-semibold text-dark d-block mb-1">Drag & drop files here</span>
-                            <span class="text-muted small d-block mb-3">or click to browse your storage</span>
-                            <span class="badge bg-light text-secondary border">Supports PNG, JPG, WEBP</span>
-                        </div>
-                        
-                        <div id="fileStatusContainer" class="d-none mb-4">
-                            <div class="d-flex align-items-center justify-content-between mb-2">
-                                <span class="small fw-bold text-dark" id="fileCountLabel">0 Files Selected</span>
-                                <button type="button" class="btn btn-sm btn-link text-danger text-decoration-none p-0" id="clearFilesBtn">Clear All</button>
-                            </div>
-                            <div class="list-group list-group-flush border rounded overflow-auto" id="filePreviewList" style="max-height: 120px; font-size: 0.85rem;">
-                                </div>
-                        </div>
+<div class="text-center mb-3">
 
-                        <div class="d-grid">
-                            <button type="submit" class="btn btn-primary btn-lg fw-medium shadow-sm py-3 fs-6" id="submitBtn" disabled>
-                                <i class="bi bi-upload me-2"></i> Upload Batch
-                            </button>
-                        </div>
-                        
-                    </form>
-                    
-                </div>
-            </div>
-            
-        </div>
-    </div>
+<div class="upload-icon">
+
+<i class="bi bi-cloud-arrow-up-fill"></i>
+
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<div class="title">
+
+Upload Images
+
+</div>
+
+<div class="subtitle">
+
+Drag & Drop or Browse Files
+
+</div>
+
+</div>
+
+<form method="POST" enctype="multipart/form-data">
+
+{% csrf_token %}
+
+<div class="upload-box text-center mb-3" id="dropzone">
+
+<input
+
+type="file"
+
+name="images"
+
+id="fileInput"
+
+multiple
+
+accept="image/*"
+
+class="hidden-input">
+
+<i class="bi bi-images" style="font-size:40px;color:white;"></i>
+
+<h5 class="mt-3 upload-text">
+
+Choose Images
+
+</h5>
+
+<p class="small-text">
+
+PNG • JPG • JPEG • WEBP
+
+</p>
+
+<span class="badge rounded-pill px-3 py-2">
+
+Multiple Upload
+
+</span>
+
+</div>
+
+<div id="fileStatusContainer" class="d-none mb-3">
+
+<div class="d-flex justify-content-between">
+
+<b id="fileCountLabel"></b>
+
+<button class="btn btn-sm btn-link text-warning p-0" type="button" id="clearFilesBtn">
+
+Clear
+
+</button>
+
+</div>
+
+<div class="list-group mt-2" id="filePreviewList"></div>
+
+</div>
+
+<div class="d-grid">
+
+<button class="upload-btn" id="submitBtn" disabled>
+
+<i class="bi bi-upload me-2"></i>
+
+Upload
+
+</button>
+
+</div>
+
+</form>
+
+</div>
 
 <script>
-    const fileInput = document.getElementById('fileInput');
-    const dropzone = document.getElementById('dropzone');
-    const fileStatusContainer = document.getElementById('fileStatusContainer');
-    const fileCountLabel = document.getElementById('fileCountLabel');
-    const filePreviewList = document.getElementById('filePreviewList');
-    const submitBtn = document.getElementById('submitBtn');
-    const clearFilesBtn = document.getElementById('clearFilesBtn');
 
-    // Drag over state visual additions
-    ['dragenter', 'dragover'].forEach(eventName => {
-        dropzone.addEventListener(eventName, () => dropzone.classList.add('dragover'), false);
-    });
-    ['dragleave', 'drop'].forEach(eventName => {
-        dropzone.addEventListener(eventName, () => dropzone.classList.remove('dragover'), false);
-    });
+const fileInput=document.getElementById("fileInput");
 
-    // Handle incoming file selection changes
-    fileInput.addEventListener('change', updateFileStatusUI);
+const dropzone=document.getElementById("dropzone");
 
-    function updateFileStatusUI() {
-        const files = fileInput.files;
-        filePreviewList.innerHTML = ''; // Reset list
+const fileStatusContainer=document.getElementById("fileStatusContainer");
 
-        if (files.length > 0) {
-            fileStatusContainer.classList.remove('d-none');
-            fileCountLabel.innerHTML = `<i class="bi bi-check-circle-fill text-success me-1"></i> ${files.length} File(s) Staged`;
-            submitBtn.removeAttribute('disabled');
+const fileCountLabel=document.getElementById("fileCountLabel");
 
-            // Render out list names for clean user review updates
-            Array.from(files).forEach(file => {
-                const listItem = document.createElement('div');
-                listItem.className = 'list-group-item bg-light text-truncate py-2 d-flex align-items-center gap-2';
-                listItem.innerHTML = `<i class="bi bi-image text-muted"></i> <span>${file.name}</span>`;
-                filePreviewList.appendChild(listItem);
-            });
-        } else {
-            resetUploadState();
-        }
-    }
+const filePreviewList=document.getElementById("filePreviewList");
 
-    function resetUploadState() {
-        fileInput.value = '';
-        fileStatusContainer.classList.add('d-none');
-        submitBtn.setAttribute('disabled', 'true');
-        filePreviewList.innerHTML = '';
-    }
+const submitBtn=document.getElementById("submitBtn");
 
-    clearFilesBtn.addEventListener('click', resetUploadState);
+const clearFilesBtn=document.getElementById("clearFilesBtn");
+
+["dragenter","dragover"].forEach(event=>{
+
+dropzone.addEventListener(event,()=>{
+
+dropzone.classList.add("dragover");
+
+});
+
+});
+
+["dragleave","drop"].forEach(event=>{
+
+dropzone.addEventListener(event,()=>{
+
+dropzone.classList.remove("dragover");
+
+});
+
+});
+
+fileInput.addEventListener("change",updateUI);
+
+function updateUI(){
+
+const files=fileInput.files;
+
+filePreviewList.innerHTML="";
+
+if(files.length>0){
+
+fileStatusContainer.classList.remove("d-none");
+
+submitBtn.disabled=false;
+
+fileCountLabel.innerHTML="✔ "+files.length+" Images Selected";
+
+Array.from(files).forEach(file=>{
+
+const div=document.createElement("div");
+
+div.className="list-group-item";
+
+div.innerHTML='<i class="bi bi-image-fill me-2"></i>'+file.name;
+
+filePreviewList.appendChild(div);
+
+});
+
+}else{
+
+reset();
+
+}
+
+}
+
+function reset(){
+
+fileInput.value="";
+
+fileStatusContainer.classList.add("d-none");
+
+submitBtn.disabled=true;
+
+filePreviewList.innerHTML="";
+
+}
+
+clearFilesBtn.addEventListener("click",reset);
+
 </script>
+
 </body>
 </html>

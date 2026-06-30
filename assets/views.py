@@ -2,6 +2,14 @@ from django.shortcuts import (
     render,
     redirect
 )
+from django.contrib.auth import (
+    authenticate,
+    login,
+    logout
+)
+from django.contrib.auth.decorators import login_required
+
+from .forms import RegisterForm
 
 
 from .models import AssetImage
@@ -35,6 +43,134 @@ from .models import DetectionResult
 from django.http import JsonResponse
 
 
+
+def home(request):
+
+    return render(
+
+        request,
+
+        "assets/home.html"
+
+    )
+def register(request):
+
+    if request.method == "POST":
+
+        form = RegisterForm(
+
+            request.POST
+
+        )
+
+        if form.is_valid():
+
+            form.save()
+
+            return redirect(
+
+                "login"
+
+            )
+
+    else:
+
+        form = RegisterForm()
+
+    return render(
+
+        request,
+
+        "assets/register.html",
+
+        {
+
+            "form": form
+
+        }
+
+    )
+
+def login_view(request):
+
+    if request.method == "POST":
+
+        username = request.POST.get(
+
+            "username"
+
+        )
+
+        password = request.POST.get(
+
+            "password"
+
+        )
+
+        user = authenticate(
+
+            request,
+
+            username=username,
+
+            password=password
+
+        )
+
+        if user is not None:
+
+            login(
+
+                request,
+
+                user
+
+            )
+
+            return redirect(
+
+                "upload"
+
+            )
+
+        else:
+
+            return render(
+
+                request,
+
+                "assets/login.html",
+
+                {
+
+                    "error":
+
+                    "Invalid Username or Password"
+
+                }
+
+            )
+
+    return render(
+
+        request,
+
+        "assets/login.html"
+
+    )
+
+@login_required
+def logout_view(request):
+
+    logout(request)
+
+    return redirect(
+
+        "home"
+
+    )
+
+@login_required
 def upload_images(request):
 
     if request.method == "POST":
@@ -58,7 +194,7 @@ def upload_images(request):
         'upload.html'
     )
 
-
+@login_required
 def process_tags(request):
 
     if request.method == "POST":
@@ -107,7 +243,7 @@ def process_tags(request):
         request,
         "dashboard.html"
     )
-
+@login_required
 def results(request):
 
     images = AssetImage.objects.all()
