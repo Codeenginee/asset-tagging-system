@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Asset Tagging Results</title>
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+      rel="stylesheet">
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css"
+      rel="stylesheet">
+
+<style>
+
+body{
+    background:#f4f6f9;
+}
+
+.navbar{
+    background:linear-gradient(90deg,#0d6efd,#0dcaf0);
+}
+
+.card-custom{
+    border:none;
+    border-radius:15px;
+    overflow:hidden;
+    transition:0.3s;
+}
+
+.card-custom:hover{
+    transform:translateY(-5px);
+    box-shadow:0 10px 20px rgba(0,0,0,.15);
+}
+
+.img-box{
+    height:250px;
+    overflow:hidden;
+}
+
+.img-box img{
+    width:100%;
+    height:100%;
+    object-fit:cover;
+}
+
+.stats-card{
+    border:none;
+    border-radius:15px;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<nav class="navbar navbar-dark shadow">
+
+<div class="container">
+
+<span class="navbar-brand">
+
+<i class="bi bi-cpu-fill"></i>
+
+Asset Tagging Dashboard
+
+</span>
+
+</div>
+
+</nav>
+
+<div class="container mt-4">
+
+<!-- Statistics -->
+
+<div class="row mb-4">
+
+<div class="col-md-3 mb-3">
+
+<div class="card stats-card shadow">
+
+<div class="card-body text-center">
+
+<h6>Total Images</h6>
+
+<h2>{{ total_images }}</h2>
+
+</div>
+
+</div>
+
+</div>
+
+<div class="col-md-3 mb-3">
+
+<div class="card stats-card shadow">
+
+<div class="card-body text-center">
+
+<h6>Total Detections</h6>
+
+<h2>{{ total_detections }}</h2>
+
+</div>
+
+</div>
+
+</div>
+
+<div class="col-md-3 mb-3">
+
+<div class="card stats-card shadow">
+
+<div class="card-body text-center">
+
+<h6>Status</h6>
+
+<span class="badge bg-success">
+
+Completed
+
+</span>
+
+</div>
+
+</div>
+
+</div>
+
+<div class="col-md-3 mb-3">
+
+<div class="card stats-card shadow">
+
+<div class="card-body text-center">
+
+<h6>AI Model</h6>
+
+<span class="badge bg-info">
+
+Grounding DINO
+
+</span>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+<!-- Search and Export -->
+
+<div class="row mb-4">
+
+<div class="col-md-6">
+
+<form method="GET">
+
+<div class="input-group">
+
+<input
+type="text"
+name="search"
+class="form-control"
+placeholder="Search Tag">
+
+<button class="btn btn-primary">
+
+<i class="bi bi-search"></i>
+
+Search
+
+</button>
+
+</div>
+
+</form>
+
+</div>
+
+<div class="col-md-6 text-end">
+
+<a href="{% url 'export_csv' %}"
+   class="btn btn-success">
+
+<i class="bi bi-file-earmark-spreadsheet"></i>
+
+CSV
+
+</a>
+
+<a href="{% url 'export_json' %}"
+   class="btn btn-primary">
+
+<i class="bi bi-filetype-json"></i>
+
+JSON
+
+</a>
+
+</div>
+
+</div>
+
+<!-- Images -->
+
+<div class="row">
+
+{% for image in images %}
+
+<div class="col-lg-4 col-md-6 mb-4">
+
+<div class="card card-custom shadow h-100">
+
+<div class="img-box">
+
+<img src="{{ image.image.url }}">
+
+</div>
+
+<div class="card-body">
+
+<h6 class="fw-bold">
+
+{{ image.image.name }}
+
+</h6>
+
+<span class="badge bg-success mb-3">
+
+{{ image.status }}
+
+</span>
+
+<hr>
+
+{% for detection in image.detections.all %}
+
+<div class="mb-3">
+
+<p>
+
+<i class="bi bi-tag-fill text-danger"></i>
+
+<strong>Tag :</strong>
+
+<span class="badge bg-secondary">
+
+{{ detection.tag|cut:'[{"value":"'|cut:'"}]' }}
+
+</span>
+
+</p>
+
+<p>
+
+<i class="bi bi-bar-chart-fill text-info"></i>
+
+<strong>Confidence :</strong>
+
+{{ detection.confidence|floatformat:2 }}
+
+</p>
+
+<div class="progress mb-3">
+
+<div
+class="progress-bar bg-success"
+role="progressbar"
+style="width:{{ detection.confidence|floatformat:0 }}%;">
+
+{{ detection.confidence|floatformat:2 }}
+
+</div>
+
+</div>
+
+<p>
+
+<i class="bi bi-bounding-box text-primary"></i>
+
+<strong>BBox :</strong>
+
+</p>
+
+<div class="alert alert-light border small">
+
+(
+{{ detection.bbox.0|floatformat:0 }},
+{{ detection.bbox.1|floatformat:0 }},
+{{ detection.bbox.2|floatformat:0 }},
+{{ detection.bbox.3|floatformat:0 }}
+)
+
+</div>
+
+</div>
+
+{% empty %}
+
+<div class="alert alert-warning">
+
+No Objects Detected
+
+</div>
+
+{% endfor %}
+
+<hr>
+
+<form
+method="POST"
+action="{% url 'delete_image' image.id %}"> 
+
+{% csrf_token %}
+
+<button
+class="btn btn-danger w-100">
+
+<i class="bi bi-trash-fill"></i>
+
+Delete Image
+
+</button>
+
+</form>
+
+</div>
+
+</div>
+
+</div>
+
+{% endfor %}
+
+</div>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+</body>
+
+</html>
