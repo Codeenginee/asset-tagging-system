@@ -50,6 +50,12 @@ class DetectionResult(models.Model):
         related_name='detections'
     )
 
+    result_image = models.ImageField(
+        upload_to="results/",
+        null=True,
+        blank=True
+    )
+
     tag = models.CharField(
         max_length=255
     )
@@ -64,6 +70,5 @@ class DetectionResult(models.Model):
 
     def __str__(self):
         return self.tag
-    
    
 

@@ -11,6 +11,7 @@ from django.contrib.auth.decorators import login_required
 
 from .forms import RegisterForm
 
+from django.db.models import Q
 
 from .models import AssetImage
 
@@ -53,24 +54,32 @@ def home(request):
         "home.html"
 
     )
+from django.contrib import messages
+
 def register(request):
 
     if request.method == "POST":
 
-        form = RegisterForm(
-
-            request.POST
-
-        )
+        form = RegisterForm(request.POST)
 
         if form.is_valid():
 
             form.save()
 
-            return redirect(
+            messages.success(
+                request,
+                "Registration successful. Please login."
+            )
 
-                "login"
+            return redirect("login")
 
+        else:
+
+            print(form.errors)
+
+            messages.error(
+                request,
+                "Please correct the errors below."
             )
 
     else:
@@ -78,19 +87,12 @@ def register(request):
         form = RegisterForm()
 
     return render(
-
         request,
-
         "register.html",
-
         {
-
             "form": form
-
         }
-
     )
-
 def login_view(request):
 
     if request.method == "POST":
@@ -246,12 +248,24 @@ def process_tags(request):
 @login_required
 def results(request):
 
+    search = request.GET.get("search", "")
+
     images = AssetImage.objects.all()
 
+    if search:
+
+        images = images.filter(
+            Q(image__icontains=search) |
+            Q(detections__tag__icontains=search)
+        ).distinct()
+
     context = {
+
         "images": images,
+        "search": search,
         "total_images": images.count(),
         "total_detections": DetectionResult.objects.count(),
+
     }
 
     return render(
@@ -259,7 +273,6 @@ def results(request):
         "results.html",
         context
     )
-
 
 
 def export_csv(request):
