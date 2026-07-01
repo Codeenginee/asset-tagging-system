@@ -28,13 +28,13 @@ urlpatterns = [
     ),
 
     path(
-        'dashboard',
+        'dashboard/',
         views.process_tags,
         name='dashboard'
     ),
 
     path(
-        '',
+        'upload/',
         views.upload_images,
         name='upload'
     ),

@@ -21,21 +21,21 @@ class RegisterForm(UserCreationForm):
         )
 
 
-class ImageUploadForm(forms.Form):
+# class ImageUploadForm(forms.Form):
 
-    images = forms.ImageField(
+#     images = forms.ImageField(
 
-        widget=forms.ClearableFileInput(
+#         widget=forms.ClearableFileInput(
 
-            attrs={
+#             attrs={
 
-                "multiple": True
+#                 "multiple": True
 
-            }
+#             }
 
-        )
+#         )
 
-    )
+#     )
 
 
 class BulkUploadForm(forms.Form):

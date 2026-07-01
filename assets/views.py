@@ -50,7 +50,7 @@ def home(request):
 
         request,
 
-        "assets/home.html"
+        "home.html"
 
     )
 def register(request):
@@ -81,7 +81,7 @@ def register(request):
 
         request,
 
-        "assets/register.html",
+        "register.html",
 
         {
 
@@ -139,7 +139,7 @@ def login_view(request):
 
                 request,
 
-                "assets/login.html",
+                "login.html",
 
                 {
 
@@ -155,7 +155,7 @@ def login_view(request):
 
         request,
 
-        "assets/login.html"
+        "login.html"
 
     )
 

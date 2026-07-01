@@ -15,87 +15,97 @@ content="width=device-width, initial-scale=1.0">
 <style>
 
 body{
-
-margin:0;
-padding:0;
-font-family:Arial,Helvetica,sans-serif;
-background:linear-gradient(135deg,#0f172a,#2563eb);
-height:100vh;
-display:flex;
-justify-content:center;
-align-items:center;
-
+    margin:0;
+    padding:0;
+    font-family:Arial,Helvetica,sans-serif;
+    background:linear-gradient(135deg,#0f172a,#2563eb);
+    min-height:100vh;
+    display:flex;
+    justify-content:center;
+    align-items:center;
 }
 
 .register-card{
-
-background:white;
-width:450px;
-padding:40px;
-border-radius:20px;
-box-shadow:0 10px 30px rgba(0,0,0,.3);
-
+    background:#fff;
+    width:450px;
+    padding:35px;
+    border-radius:20px;
+    box-shadow:0 10px 30px rgba(0,0,0,.25);
 }
 
 h2{
+    text-align:center;
+    color:#0d6efd;
+    font-size:30px;
+    margin-bottom:15px;
+}
 
-text-align:center;
-color:#0d6efd;
-font-weight:bold;
-margin-bottom:30px;
-
+label{
+    font-size:14px;
+    font-weight:600;
+    margin-bottom:3px;
 }
 
 .form-control{
+    width:100%;
+    height:40px;
+    border-radius:8px;
+    margin-bottom:10px;
+}
 
-height:50px;
-margin-bottom:20px;
-border-radius:10px;
+.input-group{
+    margin-bottom:10px;
+}
 
+.input-group .btn{
+    width:45px;
 }
 
 .btn-register{
-
-width:100%;
-height:50px;
-font-size:18px;
-border-radius:10px;
-
+    width:100%;
+    height:42px;
+    border-radius:8px;
+    font-size:16px;
+    margin-top:8px;
 }
 
-.login-link{
-
-text-align:center;
-margin-top:20px;
-
-}
-
-.login-link a{
-
-text-decoration:none;
-font-weight:bold;
-
-}
-
+.login-link,
 .back{
+    text-align:center;
+    margin-top:10px;
+    font-size:14px;
+}
 
-text-align:center;
-margin-top:15px;
+
+/* Tablet */
+@media (max-width:768px){
+
+    .register-card{
+        width:400px;
+        padding:30px;
+    }
 
 }
 
-.back a{
+/* Mobile */
+@media (max-width:480px){
 
-text-decoration:none;
+    .register-card{
+        width:90%;
+        padding:20px;
+    }
 
-}
+    h2{
+        font-size:30px;
+    }
 
-.errorlist{
+    .form-control{
+        height:42px;
+    }
 
-color:red;
-list-style:none;
-padding:0;
-margin-bottom:10px;
+    .btn-register{
+        height:42px;
+    }
 
 }
 
@@ -111,62 +121,97 @@ margin-bottom:10px;
 
 <form method="POST">
 
-{% csrf_token %}
+    {% csrf_token %}
 
-{{ form.non_field_errors }}
+    <div class="mb-3">
 
-<label>Username</label>
+        <label class="form-label">Username</label>
 
-{{ form.username }}
+        <input
+            type="text"
+            name="username"
+            class="form-control"
+            placeholder="Enter Username"
+            required>
 
-<label>Email</label>
+    </div>
 
-{{ form.email }}
+    <div class="mb-3">
 
-<label>Password</label>
+        <label class="form-label">Email</label>
 
-<div class="input-group mb-3">
+        <input
+            type="email"
+            name="email"
+            class="form-control"
+            placeholder="Enter Email"
+            required>
 
-{{ form.password1 }}
+    </div>
 
-<button
-type="button"
-class="btn btn-outline-secondary"
-onclick="togglePassword('id_password1')">
+    <div class="mb-3">
 
-👁
+        <label class="form-label">Password</label>
 
-</button>
+        <div class="input-group">
 
-</div>
+            <input
+                type="password"
+                name="password1"
+                id="id_password1"
+                class="form-control"
+                placeholder="Enter Password"
+                required>
 
-<label>Confirm Password</label>
+            <button
+                type="button"
+                class="btn btn-outline-secondary"
+                onclick="togglePassword('id_password1')">
 
-<div class="input-group mb-3">
+                👁
 
-{{ form.password2 }}
+            </button>
 
-<button
-type="button"
-class="btn btn-outline-secondary"
-onclick="togglePassword('id_password2')">
+        </div>
 
-👁
+    </div>
 
-</button>
+    <div class="mb-3">
 
-</div>
+        <label class="form-label">Confirm Password</label>
 
-<button
-type="submit"
-class="btn btn-success btn-register">
+        <div class="input-group">
 
-Create Account
+            <input
+                type="password"
+                name="password2"
+                id="id_password2"
+                class="form-control"
+                placeholder="Confirm Password"
+                required>
 
-</button>
+            <button
+                type="button"
+                class="btn btn-outline-secondary"
+                onclick="togglePassword('id_password2')">
+
+                👁
+
+            </button>
+
+        </div>
+
+    </div>
+
+    <button
+        type="submit"
+        class="btn btn-success btn-register">
+
+        Create Account
+
+    </button>
 
 </form>
-
 <div class="login-link">
 
 Already have an account?

@@ -135,6 +135,11 @@ STATICFILES_DIRS = [
     BASE_DIR / "static",
 ]
 
+
+
+CSRF_COOKIE_SECURE = False
+SESSION_COOKIE_SECURE = False
+
 MEDIA_URL ='/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
