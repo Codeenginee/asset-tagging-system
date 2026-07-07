@@ -19,6 +19,10 @@ from .models import AssetImage
 from .models import Dataset
 
 
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
+
 from .models import (
     AssetImage,
     DetectionResult
@@ -43,6 +47,17 @@ from .models import DetectionResult
 
 from django.http import JsonResponse
 
+
+from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework import status
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def protected_api(request):
+    return Response({
+        "message": "JWT Authentication Successful!",
+        "user": request.user.username
+    })
 
 
 def home(request):
@@ -171,8 +186,8 @@ def logout_view(request):
         "home"
 
     )
+@login_required(login_url="login")
 
-@login_required
 def upload_images(request):
 
     if request.method == "POST":
@@ -196,7 +211,8 @@ def upload_images(request):
         'upload.html'
     )
 
-@login_required
+@login_required(login_url="login")
+
 def process_tags(request):
 
     if request.method == "POST":
@@ -245,7 +261,9 @@ def process_tags(request):
         request,
         "dashboard.html"
     )
-@login_required
+
+@login_required(login_url="login")
+
 def results(request):
 
     search = request.GET.get("search", "")
@@ -274,6 +292,7 @@ def results(request):
         context
     )
 
+@login_required(login_url="login")
 
 def export_csv(request):
 
@@ -309,6 +328,7 @@ def export_csv(request):
 
     return response
 
+@login_required(login_url="login")
 
 
 def export_json(request):
@@ -351,7 +371,7 @@ def export_json(request):
 
     return response 
 
-
+@login_required(login_url="login")
 def bulk_upload(request):
 
     if request.method == "POST":
@@ -385,6 +405,7 @@ def bulk_upload(request):
         "assets/bulk_upload.html"
     )
 
+@login_required(login_url="login")
 
 def delete_image(request, image_id):
 
@@ -401,6 +422,7 @@ def delete_image(request, image_id):
 
     return redirect("results")
 
+@login_required(login_url="login")
 
 def process_images_view(request):
     if request.method == "POST":
@@ -424,3 +446,183 @@ def process_images_view(request):
         
     return render(request, 'results.html')
 
+
+
+
+
+
+@api_view(['POST'])
+def login_api(request):
+
+    username = request.data.get("username")
+    password = request.data.get("password")
+
+    user = authenticate(username=username, password=password)
+
+    if user is None:
+        return Response(
+            {"error": "Invalid username or password"},
+            status=status.HTTP_401_UNAUTHORIZED
+        )
+
+    refresh = RefreshToken.for_user(user)
+
+    return Response({
+        "message": "Login Successful",
+        "refresh": str(refresh),
+        "access": str(refresh.access_token),
+        "username": user.username,
+    })
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def results_api(request):
+
+    search = request.GET.get("search", "")
+
+    images = AssetImage.objects.all()
+
+    if search:
+        images = images.filter(
+            Q(image__icontains=search) |
+            Q(detections__tag__icontains=search)
+        ).distinct()
+
+    data = []
+
+    for image in images:
+
+        detections = DetectionResult.objects.filter(image=image)
+
+        tags = []
+
+        for detection in detections:
+            tags.append({
+                "tag": detection.tag,
+                "confidence": detection.confidence
+            })
+
+        data.append({
+            "id": image.id,
+            "image": image.image.url,
+            "uploaded_at": image.uploaded_at if hasattr(image, "uploaded_at") else None,
+            "detections": tags
+        })
+
+    return Response({
+        "status": "success",
+        "total_images": images.count(),
+        "total_detections": DetectionResult.objects.count(),
+        "results": data
+    }, status=status.HTTP_200_OK)
+
+@api_view(['POST'])
+
+def upload_api(request):
+
+    if 'image' not in request.FILES:
+        return Response(
+            {"error": "No image uploaded"},
+            status=status.HTTP_400_BAD_REQUEST
+        )
+
+    image = request.FILES['image']
+
+    asset = AssetImage.objects.create(
+        image=image
+    )
+
+    return Response({
+        "message": "Image uploaded successfully",
+        "image_id": asset.id,
+        "image_url": asset.image.url
+    })
+
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def detect_api(request):
+
+    image_id = request.data.get("image_id")
+
+    if not image_id:
+        return Response(
+            {"error": "image_id is required"},
+            status=status.HTTP_400_BAD_REQUEST
+        )
+
+    image = get_object_or_404(
+        AssetImage,
+        id=image_id
+    )
+
+    # Call your existing detection function
+    detections = detect_objects(
+        image.image.path,
+        "person, car, dog, cat"
+    )
+
+    return Response({
+        "message": "Detection completed",
+        "detections": detections
+    })
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def profile_api(request):
+
+    user = request.user
+
+    return Response({
+        "status": "success",
+        "message": "User Profile Retrieved Successfully",
+        "data": {
+            "id": user.id,
+            "username": user.username,
+            "email": user.email,
+            "first_name": user.first_name,
+            "last_name": user.last_name,
+            "is_staff": user.is_staff,
+            "is_superuser": user.is_superuser,
+            "is_active": user.is_active,
+            "date_joined": user.date_joined
+        }
+    }, status=status.HTTP_200_OK)
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def logout_api(request):
+
+    try:
+        refresh_token = request.data.get("refresh")
+
+        if not refresh_token:
+            return Response(
+                {
+                    "status": "error",
+                    "message": "Refresh token is required."
+                },
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        token = RefreshToken(refresh_token)
+        token.blacklist()
+
+        return Response(
+            {
+                "status": "success",
+                "message": "Logout successful."
+            },
+            status=status.HTTP_200_OK
+        )
+
+    except Exception:
+        return Response(
+            {
+                "status": "error",
+                "message": "Invalid or expired refresh token."
+            },
+            status=status.HTTP_400_BAD_REQUEST
+        )

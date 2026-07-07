@@ -11,6 +11,8 @@ urlpatterns = [
         views.home,
         name="home"
     ),
+
+    path('protected/', views.protected_api, name='protected_api'),
     path(
         "login/",
         views.login_view,
@@ -61,5 +63,12 @@ urlpatterns = [
         views.export_json,
         name='export_json'
     ),
+# JWT APIs
+    path('api/login/', views.login_api, name='login_api'),
+    path('api/upload/', views.upload_api, name='upload_api'),
+    path('api/results/', views.results_api, name='results_api'),
+    path('api/detect/',views.detect_api,name='detect_api'),
+    path('api/profile/', views.profile_api, name='profile_api'),
+    path('api/logout/', views.logout_api, name='logout_api'),
 
 ]
